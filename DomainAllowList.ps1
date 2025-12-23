@@ -13,6 +13,12 @@ if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 
 Write-Output "Adding browser extension registry policies..."
 
+# Add allowed domains here (edit as needed)
+$AllowedDomains = @("DOMAIN1.COM","DOMAIN2.COM")
+
+# Build JSON-like array string: ["DOMAIN1.COM","DOMAIN2.COM"]
+$noFilteringValue = '["' + ($AllowedDomains -join '","') + '"]'
+
 try {
     # Chrome extension registry key
     $chromeKeyPath = "HKLM:\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\ddkjiahejlhfcafbddmgiahcphecmpfh\policy"
@@ -25,7 +31,7 @@ try {
     
     # Set Chrome noFiltering value
     Write-Verbose "Setting Chrome noFiltering policy"
-    Set-ItemProperty -Path $chromeKeyPath -Name "noFiltering" -Value '["DOMAIN.COM"]' -Type String
+    Set-ItemProperty -Path $chromeKeyPath -Name "noFiltering" -Value $noFilteringValue -Type String
     
     # Edge extension registry key
     $edgeKeyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Edge\3rdparty\extensions\cimighlppcgcoapaliogpjjdehbnofhn\policy"
@@ -38,7 +44,7 @@ try {
     
     # Set Edge noFiltering value
     Write-Verbose "Setting Edge noFiltering policy for "
-    Set-ItemProperty -Path $edgeKeyPath -Name "noFiltering" -Value '["DOMAIN.COM"]' -Type String
+    Set-ItemProperty -Path $edgeKeyPath -Name "noFiltering" -Value $noFilteringValue -Type String
     
     Write-Output "Registry keys successfully added!"
     Write-Output "Chrome extension policy: $chromeKeyPath"
